@@ -1,0 +1,50 @@
+name: Cross-compile Windows Binary with Zig
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Rust and cargo-zigbuild
+        run: |
+          rustup update
+          rustup target add x86_64-pc-windows-gnu
+          cargo install cargo-zigbuild
+          sudo apt-get update && sudo apt-get install -y unzip
+
+      - name: Extract binary name and version from Cargo.toml
+        id: cargo-meta
+        run: |
+          NAME=$(cargo metadata --no-deps --format-version 1 | jq -r '.packages[0].name')
+          VERSION=$(cargo metadata --no-deps --format-version 1 | jq -r '.packages[0].version')
+          echo "name=$NAME" >> $GITHUB_OUTPUT
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Build Windows binary using Zig
+        run: |
+          cargo zigbuild --release --target x86_64-pc-windows-gnu
+
+      - name: Prepare release artifact
+        run: |
+          mkdir -p dist
+          cp target/x86_64-pc-windows-gnu/release/${{ steps.cargo-meta.outputs.name }}.exe dist/
+          cd dist
+          zip ${{ steps.cargo-meta.outputs.name }}-${{ steps.cargo-meta.outputs.version }}-windows-x86_64.zip *.exe
+
+      - name: Upload binary to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+
+
