@@ -11,4 +11,4 @@ tokio = { version = "1", features = ["rt-multi-thread", "macros"] }
 clap = { version = "4.5.41", features = ["derive"] }
 
 [build-dependencies]
-embed-resource = "*"
+embed-resource = "2.5.2"
