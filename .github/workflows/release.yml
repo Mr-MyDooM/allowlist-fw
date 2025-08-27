@@ -1,4 +1,4 @@
-name: Compile Windows Binary using default Rust toolchain
+name: Compile Windows Binary
 
 on:
   push:
