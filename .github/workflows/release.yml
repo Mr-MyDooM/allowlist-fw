@@ -1,4 +1,4 @@
-name: Compile Windows Binary
+name: Compile Windows Binary using default Rust toolchain
 
 on:
   push:
@@ -13,17 +13,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install Zig
-        uses: korandoru/setup-zig@v1
-        with:
-          zig-version: 0.20.1
-
-      - name: Install Rust and cargo-zigbuild
+      - name: Install Rust and Windows target
         run: |
           rustup update
           rustup target add x86_64-pc-windows-gnu
-          cargo install cargo-zigbuild
-          sudo apt-get update && sudo apt-get install -y unzip jq
+          sudo apt-get update && sudo apt-get install -y unzip jq mingw-w64
 
       - name: Extract binary name and version from Cargo.toml
         id: cargo-meta
@@ -33,17 +27,22 @@ jobs:
           echo "name=$NAME" >> $GITHUB_OUTPUT
           echo "version=$VERSION" >> $GITHUB_OUTPUT
 
-      - name: Build Windows binary using Zig
+      - name: Build Windows binary
         run: |
-          cargo zigbuild --release --target x86_64-pc-windows-gnu
+          cargo build --release --target x86_64-pc-windows-gnu
 
-      - name: Prepare release artifact
+      - name: Prepare release artifact and checksum
         run: |
+          NAME=${{ steps.cargo-meta.outputs.name }}
+          VERSION=${{ steps.cargo-meta.outputs.version }}
+
           mkdir -p dist
-          cp target/x86_64-pc-windows-gnu/release/${{ steps.cargo-meta.outputs.name }}.exe dist/
+          BIN=target/x86_64-pc-windows-gnu/release/${NAME}.exe
+          cp "$BIN" dist/
+
           cd dist
-          zip ${{ steps.cargo-meta.outputs.name }}-${{ steps.cargo-meta.outputs.version }}-windows-x86_64.zip *.exe
-          sha256sum "dist/${NAME}.exe" > "dist/${NAME}.sha256"
+          sha256sum "${NAME}.exe" > "${NAME}.sha256"
+          zip "${NAME}-${VERSION}-windows-x86_64.zip" "${NAME}.exe" "${NAME}.sha256"
 
       - name: Upload binary to GitHub Release
         uses: softprops/action-gh-release@v2
