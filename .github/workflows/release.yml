@@ -18,6 +18,8 @@ jobs:
           rustup update
           rustup target add x86_64-pc-windows-gnu
           sudo apt-get update && sudo apt-get install -y unzip jq mingw-w64
+          cargo fetch
+          cargo clean
 
       - name: Extract binary name and version from Cargo.toml
         id: cargo-meta
