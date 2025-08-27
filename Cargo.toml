@@ -8,6 +8,7 @@ anyhow = "1"
 is_elevated = "0.1"
 trust-dns-resolver = { version = "0.23", default-features = false, features = ["tokio-runtime"] }
 tokio = { version = "1", features = ["rt-multi-thread", "macros"] }
+clap = { version = "4.5.41", features = ["derive"] }
 
 [build-dependencies]
 embed-resource = "2.4"
