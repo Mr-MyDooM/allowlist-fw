@@ -22,7 +22,7 @@ enum Commands {
 }
 
 /// DNS servers we’ll use for resolving allowed domains
-const DNS_SERVERS: &[&str] = &["8.8.8.8", "1.1.1.1"];
+const DNS_SERVERS: &[&str] = &["194.242.2.9", "9.9.9.9", "86.54.11.13"];
 
 /// Build a custom resolver config with our DNS servers
 fn custom_resolver(servers: &[&str]) -> (ResolverConfig, ResolverOpts) {
