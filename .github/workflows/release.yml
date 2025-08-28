@@ -2,8 +2,8 @@ name: Compile Windows Binary
 
 on:
   push:
-    tags:
-      - 'v*'
+#    tags:
+#      - 'v*'
 
 permissions:
   contents: write
