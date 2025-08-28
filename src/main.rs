@@ -15,7 +15,7 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Commands {
-    /// Apply allowlist firewall rules
+    /// Apply allow-list firewall rules
     Run,
     /// Restore firewall defaults
     Restore,
@@ -102,6 +102,16 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 Err(e) => eprintln!("Failed to resolve {}: {}", d, e),
             }
         }
+
+        // Allow common local network ranges
+        allow_host("AllowLocalNetwork", &[
+            "192.168.0.0/16".to_string(),
+            "10.0.0.0/8".to_string(),
+            "172.16.0.0/12".to_string(),
+        ])?;
+
+        // Allow loopback connection
+        allow_host("AllowLoopback", &["127.0.0.1".to_string()])?;
 
         // Default: block all outbound traffic
         Command::new("netsh")
