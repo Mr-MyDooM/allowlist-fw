@@ -57,5 +57,7 @@ jobs:
         with:
           files: dist/*.zip
           token: ${{ secrets.GH_PAT }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          name: Release ${{ steps.cargo-meta.outputs.version }}
+          tag_name: ${{ github.ref_name }}
+          draft: false
+          prerelease: false
