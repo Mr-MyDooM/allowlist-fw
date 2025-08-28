@@ -103,6 +103,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             }
         }
 
+        // Allow DNS servers explicitly to ensures that your resolver IPs are reachable even after the "block all" rule is enforced
+        allow_host("AllowDNS", &[
+            "194.242.2.9".to_string(), // all.dns.mullvad.net
+            "9.9.9.9".to_string(), // Quad9
+            "86.54.11.13".to_string(), // Dns4eu for Public
+        ])?;
+
         // Allow common local network ranges
         allow_host("AllowLocalNetwork", &[
             "192.168.0.0/16".to_string(),
